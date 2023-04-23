@@ -39,7 +39,29 @@ class ECountryForm extends StatefulWidget {
 class _ECountryFormState extends State<ECountryForm> {
   String desc = "No records";
   String selectCountry = "Malaysia";
-  List<String> countryList = ["Malaysia", "Thailand", "Singapore"];
+  // List<String> countryList = ["Malaysia", "Thailand", "Singapore"];
+  List<Map> countryList = [
+    {
+      'id': '1',
+      'image': Image.network("https://flagsapi.com/MY/flat/24.png"),
+      'name': 'Malaysia'
+    },
+    {
+      'id': '2',
+      'image': Image.network("https://flagsapi.com/SG/flat/24.png"),
+      'name': 'Singapore'
+    },
+    {
+      'id': '3',
+      'image': Image.network("https://flagsapi.com/TH/flat/24.png"),
+      'name': 'Thailand'
+    },
+    {
+      'id': '4',
+      'image': Image.network("https://flagsapi.com/US/flat/24.png"),
+      'name': 'United States'
+    }
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +81,15 @@ class _ECountryFormState extends State<ECountryForm> {
                 selectCountry = newValue.toString();
               });
             },
-            items: countryList.map((selectCountry) {
+            items: countryList.map((countryItem) {
               return DropdownMenuItem(
-                child: Text(
-                  selectCountry,
-                ),
-                value: selectCountry,
+                value: countryItem['id'].toString(),
+                child: Row(children: [
+                  // Image.asset(countryItem['image'], width: 25),
+                  Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Text(countryItem['name']))
+                ]),
               );
             }).toList()),
         ElevatedButton(
