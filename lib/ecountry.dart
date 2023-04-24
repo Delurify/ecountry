@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ndialog/ndialog.dart';
-import 'dart:io';
 
 class EcountryPage extends StatefulWidget {
   const EcountryPage({super.key});
@@ -37,31 +36,15 @@ class ECountryForm extends StatefulWidget {
 }
 
 class _ECountryFormState extends State<ECountryForm> {
-  String desc = "No records";
+  double gdp = 0.0;
+  double unemployRate = 0.0;
+  String capital = "";
+  String id = "";
+  var flagImg = Image.asset('assets/images/nothing.png', scale: 5);
+  String desc = " ";
   String selectCountry = "Malaysia";
-  // List<String> countryList = ["Malaysia", "Thailand", "Singapore"];
-  List<Map> countryList = [
-    {
-      'id': '1',
-      'image': Image.network("https://flagsapi.com/MY/flat/24.png"),
-      'name': 'Malaysia'
-    },
-    {
-      'id': '2',
-      'image': Image.network("https://flagsapi.com/SG/flat/24.png"),
-      'name': 'Singapore'
-    },
-    {
-      'id': '3',
-      'image': Image.network("https://flagsapi.com/TH/flat/24.png"),
-      'name': 'Thailand'
-    },
-    {
-      'id': '4',
-      'image': Image.network("https://flagsapi.com/US/flat/24.png"),
-      'name': 'United States'
-    }
-  ];
+  List<String> countryList = ["Malaysia", "Thailand", "Singapore"];
+  var mapObj = <String, dynamic>{};
 
   @override
   Widget build(BuildContext context) {
@@ -74,26 +57,26 @@ class _ECountryFormState extends State<ECountryForm> {
         ),
         const SizedBox(height: 10),
         DropdownButton(
-            itemHeight: 60,
-            value: selectCountry,
-            onChanged: (newValue) {
-              setState(() {
-                selectCountry = newValue.toString();
-              });
-            },
-            items: countryList.map((countryItem) {
-              return DropdownMenuItem(
-                value: countryItem['id'].toString(),
-                child: Row(children: [
-                  // Image.asset(countryItem['image'], width: 25),
-                  Container(
-                      margin: const EdgeInsets.only(left: 10),
-                      child: Text(countryItem['name']))
-                ]),
-              );
-            }).toList()),
+          itemHeight: 60,
+          value: selectCountry,
+          onChanged: (newValue) {
+            setState(() {
+              selectCountry = newValue.toString();
+            });
+          },
+          items: countryList.map((selectCountry) {
+            return DropdownMenuItem(
+              child: Text(
+                selectCountry,
+              ),
+              value: selectCountry,
+            );
+          }).toList(),
+        ),
         ElevatedButton(
             onPressed: _loadCountry, child: const Text("Load Country")),
+        const SizedBox(height: 10),
+        Expanded(child: flagImg),
         Text(desc,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
       ]),
@@ -101,6 +84,7 @@ class _ECountryFormState extends State<ECountryForm> {
   }
 
   Future<void> _loadCountry() async {
+    mapObj = {"Malaysia": "MY", "Thailand": "TL", "Singapore": "SG"};
     ProgressDialog progressDialog = ProgressDialog(context,
         message: const Text("Progress"), title: const Text("Searching..."));
     progressDialog.show();
@@ -119,7 +103,14 @@ class _ECountryFormState extends State<ECountryForm> {
       var parsedJson = json.decode(jsonData);
       print(parsedJson);
       setState(() {
-        desc = "";
+        gdp = parsedJson[0]['gdp'];
+        unemployRate = parsedJson[0]["unemployment"];
+        capital = parsedJson[0]["capital"];
+        id = mapObj[selectCountry];
+        flagImg = Image.network("https://flagsapi.com/$id/flat/64.png");
+
+        desc =
+            "The current GDP of $selectCountry is $gdp. The unemployment rate is $unemployRate percent, and the capital city of $selectCountry is $capital";
       });
     } else {
       setState(() {
