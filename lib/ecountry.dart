@@ -17,7 +17,6 @@ class _EcountryState extends State<EcountryPage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('E-Country'),
-          centerTitle: true,
         ),
         body: Center(
             child: Column(children: [
@@ -43,11 +42,33 @@ class _ECountryFormState extends State<ECountryForm> {
   var flagImg = Image.asset('assets/images/nothing.png', scale: 5);
   String desc = " ";
   String selectCountry = "Malaysia";
-  List<String> countryList = ["Malaysia", "Thailand", "Singapore"];
+  List<String> countryList = [
+    "Malaysia",
+    "Thailand",
+    "Singapore",
+    "United States",
+    "Switzerland",
+    "Germany",
+    "United Kingdom",
+    "Japan",
+    "Sweden"
+  ];
   var mapObj = <String, dynamic>{};
 
   @override
   Widget build(BuildContext context) {
+    mapObj = {
+      "Malaysia": "MY",
+      "Thailand": "TH",
+      "Singapore": "SG",
+      "United States": "US",
+      "Switzerland": "CH",
+      "Germany": "DE",
+      "United Kingdom": "UK",
+      "Japan": "JP",
+      "Sweden": "SE"
+    };
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Column(children: [
@@ -75,7 +96,6 @@ class _ECountryFormState extends State<ECountryForm> {
         ),
         ElevatedButton(
             onPressed: _loadCountry, child: const Text("Load Country")),
-        const SizedBox(height: 10),
         Expanded(child: flagImg),
         Text(desc,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -84,11 +104,9 @@ class _ECountryFormState extends State<ECountryForm> {
   }
 
   Future<void> _loadCountry() async {
-    mapObj = {"Malaysia": "MY", "Thailand": "TL", "Singapore": "SG"};
     ProgressDialog progressDialog = ProgressDialog(context,
         message: const Text("Progress"), title: const Text("Searching..."));
     progressDialog.show();
-    progressDialog.dismiss();
 
     String apiid = "D9dYvmSVchATL1WgPdG2tg==ol8iKfbIRSBgSPsH";
     Uri url =
@@ -98,6 +116,7 @@ class _ECountryFormState extends State<ECountryForm> {
       'X-API-Key': apiid,
     });
     var rescode = response.statusCode;
+    print("Hello");
     if (rescode == 200) {
       var jsonData = response.body;
       var parsedJson = json.decode(jsonData);
@@ -111,10 +130,12 @@ class _ECountryFormState extends State<ECountryForm> {
 
         desc =
             "The current GDP of $selectCountry is $gdp. The unemployment rate is $unemployRate percent, and the capital city of $selectCountry is $capital";
+        progressDialog.dismiss();
       });
     } else {
       setState(() {
         desc = selectCountry;
+        progressDialog.dismiss();
       });
     }
   }
