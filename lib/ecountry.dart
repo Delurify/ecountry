@@ -22,7 +22,7 @@ class _EcountryState extends State<EcountryPage> {
             child: Column(children: [
           Flexible(
               flex: 5, child: Image.asset('assets/images/logo.png', scale: 2)),
-          const Flexible(flex: 5, child: ECountryForm())
+          const Flexible(flex: 10, child: ECountryForm())
         ])));
   }
 }
@@ -38,6 +38,7 @@ class _ECountryFormState extends State<ECountryForm> {
   double gdp = 0.0;
   double unemployRate = 0.0;
   String capital = "";
+  String currencyName = "";
   String id = "";
   var flagImg = Image.asset('assets/images/nothing.png', scale: 5);
   String desc = " ";
@@ -96,7 +97,7 @@ class _ECountryFormState extends State<ECountryForm> {
         ),
         ElevatedButton(
             onPressed: _loadCountry, child: const Text("Load Country")),
-        Expanded(child: flagImg),
+        SizedBox(height: 64, child: flagImg),
         Text(desc,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
       ]),
@@ -116,25 +117,24 @@ class _ECountryFormState extends State<ECountryForm> {
       'X-API-Key': apiid,
     });
     var rescode = response.statusCode;
-    print("Hello");
     if (rescode == 200) {
       var jsonData = response.body;
       var parsedJson = json.decode(jsonData);
-      print(parsedJson);
       setState(() {
         gdp = parsedJson[0]['gdp'];
         unemployRate = parsedJson[0]["unemployment"];
         capital = parsedJson[0]["capital"];
+        currencyName = parsedJson[0]['currency']['name'];
         id = mapObj[selectCountry];
         flagImg = Image.network("https://flagsapi.com/$id/flat/64.png");
 
         desc =
-            "The current GDP of $selectCountry is $gdp. The unemployment rate is $unemployRate percent, and the capital city of $selectCountry is $capital";
+            "The current GDP of $selectCountry is $gdp. The unemployment rate is $unemployRate percent, the capital city of $selectCountry is $capital, and the currency name is $currencyName";
         progressDialog.dismiss();
       });
     } else {
       setState(() {
-        desc = selectCountry;
+        desc = "Country not found.";
         progressDialog.dismiss();
       });
     }
